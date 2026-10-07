@@ -1,0 +1,137 @@
+<div class="px-4 sm:px-6 lg:px-8 py-4 max-w-7xl mx-auto">
+  
+  <div class="sm:flex sm:items-center sm:justify-between mb-6 gap-4">
+    <!-- Buscador a la izquierda -->
+    <div class="flex-1 w-full max-w-md">
+      <div class="relative rounded-md shadow-sm">
+        <input type="text" (input)="onSearch($event)"
+          class="block w-full rounded-md border-0 py-2 px-3 text-slate-900 ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+          placeholder="🔍 Buscar cliente por nombre o teléfono...">
+      </div>
+    </div>
+
+    <!-- Botón a la derecha -->
+    <div class="mt-4 sm:mt-0 sm:flex-none">
+      <button type="button" (click)="openCreateModal()"
+        class="block w-full sm:w-auto rounded-md bg-blue-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
+        + Nuevo cliente
+      </button>
+    </div>
+  </div>
+
+  <div class="mt-8 flow-root">
+    <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+      <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+        <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
+
+          <table class="min-w-full divide-y divide-slate-300 bg-white" *ngIf="!loading && filteredClients.length > 0">
+            <thead class="bg-slate-50">
+              <tr>
+                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-slate-900 sm:pl-6">Nombre
+                </th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">Teléfono</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">Estado</th>
+                <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
+                  <span class="sr-only">Acciones</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200">
+              <tr *ngFor="let client of filteredClients">
+                <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-slate-900 sm:pl-6">{{ client.name
+                  }}</td>
+                <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500">{{ client.phone || 'N/A' }}</td>
+                <td class="whitespace-nowrap px-3 py-4 text-sm">
+                  <span
+                    [ngClass]="client.active ? 'bg-green-50 text-green-700 ring-green-600/20' : 'bg-red-50 text-red-700 ring-red-600/10'"
+                    class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset">
+                    {{ client.active ? 'Activo' : 'Inactivo' }}
+                  </span>
+                </td>
+                <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+                  <a [routerLink]="['/clients', client.id]"
+                    class="text-indigo-600 hover:text-indigo-900 mr-4 font-bold">Ver cuenta</a>
+                  <button (click)="openEditModal(client)"
+                    class="text-blue-600 hover:text-blue-900 mr-4 font-semibold">Editar</button>
+                  <button (click)="toggleStatus(client)" class="text-slate-600 hover:text-slate-900">
+                    {{ client.active ? 'Desactivar' : 'Activar' }}
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Estados vacíos -->
+          <div *ngIf="loading" class="p-8 text-center text-sm text-slate-500">
+            Cargando clientes...
+          </div>
+          <div *ngIf="!loading && filteredClients.length === 0" class="p-8 text-center text-sm text-slate-500">
+            No se encontraron clientes.
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Flotante (Client Form) -->
+<div *ngIf="showModal" class="relative z-50" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+  <div class="fixed inset-0 bg-slate-900 bg-opacity-75 backdrop-blur-sm transition-opacity"></div>
+
+  <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+    <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+      <div
+        class="relative transform overflow-hidden rounded-xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+
+        <form [formGroup]="clientForm" (ngSubmit)="saveClient()">
+          <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+            <h3 class="text-xl font-semibold leading-6 text-slate-900 mb-6" id="modal-title">
+              {{ isEditing ? 'Editar Cliente' : 'Nuevo Cliente' }}
+            </h3>
+
+            <div class="space-y-4">
+              <div>
+                <label for="name" class="block text-sm font-medium leading-6 text-slate-900">Nombre del cliente</label>
+                <div class="mt-1">
+                  <input type="text" formControlName="name" id="name"
+                    class="block w-full rounded-md border-0 py-2 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6">
+                </div>
+              </div>
+
+              <div>
+                <label for="phone" class="block text-sm font-medium leading-6 text-slate-900">Teléfono
+                  (opcional)</label>
+                <div class="mt-1">
+                  <input type="text" formControlName="phone" id="phone"
+                    class="block w-full rounded-md border-0 py-2 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6">
+                </div>
+              </div>
+
+              <div>
+                <label for="address" class="block text-sm font-medium leading-6 text-slate-900">Dirección
+                  (opcional)</label>
+                <div class="mt-1">
+                  <input type="text" formControlName="address" id="address"
+                    class="block w-full rounded-md border-0 py-2 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-slate-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 gap-2">
+            <button type="submit" [disabled]="clientForm.invalid || savingClient"
+              class="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 sm:w-auto disabled:opacity-50">
+              {{ savingClient ? 'Guardando...' : 'Guardar' }}
+            </button>
+            <button type="button" (click)="closeModal()"
+              class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 sm:mt-0 sm:w-auto">
+              Cancelar
+            </button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>

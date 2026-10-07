@@ -1,0 +1,63 @@
+<div class="max-w-2xl mx-auto">
+  <div class="md:flex md:items-center md:justify-between mb-6">
+    <div class="min-w-0 flex-1">
+      <h2 class="text-2xl font-bold leading-7 text-slate-900 sm:truncate sm:text-3xl sm:tracking-tight">
+        {{ isEditing ? 'Editar Cliente' : 'Nuevo Cliente' }}
+      </h2>
+    </div>
+  </div>
+
+  <div class="bg-white shadow-sm ring-1 ring-slate-900/5 sm:rounded-xl md:col-span-2">
+    
+    @if (errorMessage) {
+      <div class="rounded-md bg-red-50 p-4 m-4">
+        <div class="flex">
+          <div class="ml-3">
+            <h3 class="text-sm font-medium text-red-800">{{ errorMessage }}</h3>
+          </div>
+        </div>
+      </div>
+    }
+
+    <form [formGroup]="clientForm" (ngSubmit)="onSubmit()" class="px-4 py-6 sm:p-8">
+      <div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+        
+        <div class="sm:col-span-4">
+          <label for="name" class="block text-sm font-medium leading-6 text-slate-900">Nombre *</label>
+          <div class="mt-2">
+            <input type="text" id="name" formControlName="name" class="block w-full rounded-md border-0 py-1.5 px-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6">
+          </div>
+        </div>
+
+        <div class="sm:col-span-4">
+          <label for="phone" class="block text-sm font-medium leading-6 text-slate-900">Teléfono (opcional)</label>
+          <div class="mt-2">
+            <input type="text" id="phone" formControlName="phone" class="block w-full rounded-md border-0 py-1.5 px-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6">
+          </div>
+        </div>
+
+        <div class="col-span-full">
+          <label for="address" class="block text-sm font-medium leading-6 text-slate-900">Dirección (opcional)</label>
+          <div class="mt-2">
+            <input type="text" id="address" formControlName="address" class="block w-full rounded-md border-0 py-1.5 px-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6">
+          </div>
+        </div>
+
+        <div class="col-span-full">
+          <label for="notes" class="block text-sm font-medium leading-6 text-slate-900">Notas adicionales (opcional)</label>
+          <div class="mt-2">
+            <textarea id="notes" rows="3" formControlName="notes" class="block w-full rounded-md border-0 py-1.5 px-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"></textarea>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="mt-8 flex items-center justify-end gap-x-6 border-t border-slate-900/10 pt-8">
+        <button type="button" routerLink="/clients" class="text-sm font-semibold leading-6 text-slate-900">Cancelar</button>
+        <button type="submit" [disabled]="clientForm.invalid || loading" class="rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-50">
+          {{ loading ? 'Guardando...' : 'Guardar' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

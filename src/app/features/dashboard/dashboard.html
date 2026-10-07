@@ -1,0 +1,51 @@
+<div class="px-4 sm:px-6 lg:px-8 py-4 max-w-7xl mx-auto">
+  <div class="sm:flex sm:items-center justify-end mb-8">
+    <div class="mt-4 sm:mt-0 sm:flex-none flex flex-wrap gap-3">
+      <a routerLink="/reports" class="block rounded-md bg-white px-3 py-2 text-center text-sm font-semibold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50">
+        Reportes
+      </a>
+      <a routerLink="/clients/new" class="block rounded-md bg-white px-3 py-2 text-center text-sm font-semibold text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50">
+        Nuevo Cliente
+      </a>
+      <a routerLink="/clients" class="block rounded-md bg-blue-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-500">
+        Buscar Cliente
+      </a>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="text-center py-12 text-slate-500">
+    Cargando estadísticas...
+  </div>
+
+  <div *ngIf="!loading">
+    
+    <!-- Tarjeta Principal de Deuda -->
+    <div class="mb-8 rounded-2xl bg-gradient-to-r from-slate-900 to-slate-800 p-8 shadow-xl">
+      <h3 class="text-sm font-medium text-slate-300">Dinero total en la calle (Por cobrar)</h3>
+      <div class="mt-2 flex items-baseline gap-x-2">
+        <span class="text-5xl font-bold tracking-tight text-white">${{ totalDebtGeneral > 0 ? (totalDebtGeneral | number) : '0' }}</span>
+      </div>
+      <p class="mt-4 text-sm text-slate-400">Esta es la suma total de lo que te deben todos los clientes registrados.</p>
+    </div>
+
+    <!-- Tarjetas Secundarias -->
+    <dl class="grid grid-cols-1 gap-5 sm:grid-cols-3">
+      
+      <div class="overflow-hidden rounded-xl bg-white px-4 py-5 shadow-sm ring-1 ring-slate-900/5 sm:p-6 hover:shadow-md transition-shadow">
+        <dt class="truncate text-sm font-medium text-slate-500">Domicilios Hoy</dt>
+        <dd class="mt-1 text-3xl font-semibold tracking-tight text-slate-900">{{ deliveriesToday }}</dd>
+      </div>
+
+      <div class="overflow-hidden rounded-xl bg-white px-4 py-5 shadow-sm ring-1 ring-slate-900/5 sm:p-6 hover:shadow-md transition-shadow">
+        <dt class="truncate text-sm font-medium text-slate-500">Domicilios este mes</dt>
+        <dd class="mt-1 text-3xl font-semibold tracking-tight text-slate-900">{{ deliveriesMonth }}</dd>
+      </div>
+
+      <div class="overflow-hidden rounded-xl bg-white px-4 py-5 shadow-sm ring-1 ring-slate-900/5 sm:p-6 hover:shadow-md transition-shadow">
+        <dt class="truncate text-sm font-medium text-slate-500">Clientes Activos</dt>
+        <dd class="mt-1 text-3xl font-semibold tracking-tight text-slate-900">{{ totalClients }}</dd>
+      </div>
+
+    </dl>
+  </div>
+</div>

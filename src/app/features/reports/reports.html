@@ -1,0 +1,79 @@
+<div class="px-4 sm:px-6 lg:px-8 py-4 max-w-7xl mx-auto">
+  <!-- Filtros -->
+  <div class="bg-white p-4 shadow-sm ring-1 ring-slate-900/5 sm:rounded-xl mb-8 flex flex-wrap gap-4 items-end">
+    <div>
+      <label class="block text-sm font-medium leading-6 text-slate-900">Desde</label>
+      <input type="date" [(ngModel)]="startDate" (change)="applyFilters()" class="mt-2 block w-full rounded-md border-0 py-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6">
+    </div>
+    <div>
+      <label class="block text-sm font-medium leading-6 text-slate-900">Hasta</label>
+      <input type="date" [(ngModel)]="endDate" (change)="applyFilters()" class="mt-2 block w-full rounded-md border-0 py-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6">
+    </div>
+    <div class="flex-1 min-w-[200px]">
+      <label class="block text-sm font-medium leading-6 text-slate-900">Filtrar por Cliente</label>
+      <select [(ngModel)]="selectedClientId" (change)="applyFilters()" class="mt-2 block w-full rounded-md border-0 py-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6">
+        <option value="">Todos los clientes</option>
+        <option *ngFor="let client of clients" [value]="client.id">{{ client.name }}</option>
+      </select>
+    </div>
+    <div>
+      <button (click)="applyFilters()" class="rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-800">
+        Filtrar
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="text-center py-12 text-slate-500">
+    Generando reporte...
+  </div>
+
+  <div *ngIf="!loading">
+    <!-- Totales -->
+    <dl class="grid grid-cols-1 gap-5 sm:grid-cols-2 mb-8">
+      <div class="overflow-hidden rounded-xl bg-white px-4 py-5 shadow-sm ring-1 ring-slate-900/5 sm:p-6">
+        <dt class="truncate text-sm font-medium text-slate-500">Total Facturado (Domicilios realizados)</dt>
+        <dd class="mt-1 text-3xl font-semibold tracking-tight text-slate-900">${{ totalDeliveriesValue | number }}</dd>
+      </div>
+      <div class="overflow-hidden rounded-xl bg-white px-4 py-5 shadow-sm ring-1 ring-slate-900/5 sm:p-6">
+        <dt class="truncate text-sm font-medium text-slate-500">Total Ingresos (Abonos recibidos)</dt>
+        <dd class="mt-1 text-3xl font-semibold tracking-tight text-green-600">${{ totalPaymentsValue | number }}</dd>
+      </div>
+    </dl>
+
+    <!-- Tabla de movimientos -->
+    <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
+      <table class="min-w-full divide-y divide-slate-300 bg-white">
+        <thead class="bg-slate-50">
+          <tr>
+            <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-slate-900 sm:pl-6">Fecha</th>
+            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">Cliente</th>
+            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">Tipo</th>
+            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">Monto</th>
+            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">Detalles</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-200">
+          <tr *ngFor="let item of filteredHistory" class="hover:bg-slate-50">
+            <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-slate-500 sm:pl-6">{{ item.date | date:'short' }}</td>
+            <td class="whitespace-nowrap px-3 py-4 text-sm font-medium text-slate-900">{{ item.clientName }}</td>
+            <td class="whitespace-nowrap px-3 py-4 text-sm">
+              <span *ngIf="item.type === 'payment'" class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">Abono</span>
+              <span *ngIf="item.type === 'delivery'" class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-600/20">Domicilio</span>
+            </td>
+            <td class="whitespace-nowrap px-3 py-4 text-sm font-bold" [ngClass]="item.type === 'payment' ? 'text-green-600' : 'text-slate-900'">
+              {{ item.type === 'payment' ? '+' : '' }}${{ item.amount | number }}
+            </td>
+            <td class="px-3 py-4 text-sm text-slate-500 max-w-xs truncate">
+              {{ item.notes || '-' }}
+              <span *ngIf="item.type === 'delivery' && item.isPaid" class="text-xs ml-2 text-emerald-600">(Pagado)</span>
+            </td>
+          </tr>
+          
+          <tr *ngIf="filteredHistory.length === 0">
+            <td colspan="5" class="py-8 text-center text-sm text-slate-500">No hay movimientos en este rango de fechas.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
